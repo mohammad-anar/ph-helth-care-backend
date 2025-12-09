@@ -5,7 +5,6 @@ import sendResponse from "../../shared/sendResponse";
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.createPatient(req.body);
-  console.log({ result });
   sendResponse(res, {
     statusCode: 201,
     success: true,
