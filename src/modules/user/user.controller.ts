@@ -3,6 +3,7 @@ import catchAsync from "../../shared/catchAsync";
 import { UserServices } from "./user.service";
 import sendResponse from "../../shared/sendResponse";
 import { UserRole, UserStatus } from "@prisma/client";
+import dynamicQuery from "../../helpers/dynamicQuery";
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.createPatient(req);
@@ -39,17 +40,18 @@ const createAdmin = catchAsync(async (req: Request, res: Response) => {
   });
 });
 const getAllUsers = catchAsync(async (req: Request, res: Response) => {
-  const { page, limit, searchTerm, sortBy, sortOrder, role, status } =
-    req.query;
-  const result = await UserServices.getAllUsers({
-    page: Number(page),
-    limit: Number(limit),
-    searchTerm: searchTerm as string,
-    sortBy: sortBy as string,
-    sortOrder: sortOrder as string,
-    role: role as UserRole,
-    status: status as UserStatus,
-  });
+  // page, limit, sortBy, sortOrder
+  // fields, searchTerm - searching, filtering
+
+  const filters = dynamicQuery(req.query, ["role", "status", "email"]);
+  const options = dynamicQuery(req.query, [
+    "page",
+    "limit",
+    "sortBy",
+    "sortOrder",
+  ]);
+
+  const result = await UserServices.getAllUsers(filter, options);
 
   sendResponse(res, {
     statusCode: 201,
