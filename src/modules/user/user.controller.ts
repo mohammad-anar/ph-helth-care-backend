@@ -4,6 +4,7 @@ import { UserServices } from "./user.service";
 import sendResponse from "../../shared/sendResponse";
 import { UserRole, UserStatus } from "@prisma/client";
 import dynamicQuery from "../../helpers/dynamicQuery";
+import { userFilterableFields } from "./user.constand";
 
 const createPatient = catchAsync(async (req: Request, res: Response) => {
   const result = await UserServices.createPatient(req);
@@ -43,12 +44,7 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   // page, limit, sortBy, sortOrder
   // fields, searchTerm - searching, filtering
 
-  const filters = dynamicQuery(req.query, [
-    "role",
-    "status",
-    "email",
-    "searchTerm",
-  ]);
+  const filters = dynamicQuery(req.query, userFilterableFields);
   const options = dynamicQuery(req.query, [
     "page",
     "limit",
