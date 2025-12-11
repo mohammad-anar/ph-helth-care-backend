@@ -43,7 +43,12 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
   // page, limit, sortBy, sortOrder
   // fields, searchTerm - searching, filtering
 
-  const filters = dynamicQuery(req.query, ["role", "status", "email"]);
+  const filters = dynamicQuery(req.query, [
+    "role",
+    "status",
+    "email",
+    "searchTerm",
+  ]);
   const options = dynamicQuery(req.query, [
     "page",
     "limit",
@@ -51,13 +56,14 @@ const getAllUsers = catchAsync(async (req: Request, res: Response) => {
     "sortOrder",
   ]);
 
-  const result = await UserServices.getAllUsers(filter, options);
+  const result = await UserServices.getAllUsers(filters, options);
 
   sendResponse(res, {
     statusCode: 201,
     success: true,
     message: "Users retrieve successfully",
-    data: result,
+    meta: result.meta,
+    data: result.data,
   });
 });
 
